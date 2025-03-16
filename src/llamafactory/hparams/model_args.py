@@ -350,6 +350,10 @@ class ModelArguments(VllmArguments, ExportArguments, ProcessorArguments, Quantiz
         init=False,
         metadata={"help": "Whether use block diag attention or not, derived from `neat_packing`. Do not specify it."},
     )
+    use_fast_img_processor: bool = field(
+        default=False,
+        metadata={"help": "Whether or not to use fast image processor. Qwen-VL-2 and Qwen-VL-2.5 only"},
+    )
 
     def __post_init__(self):
         BaseModelArguments.__post_init__(self)

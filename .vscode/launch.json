@@ -1,0 +1,52 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python Debugger: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "args": [
+            ]
+        },
+        {
+            "name": "Debug Finetune YT1B llamafactory-cli",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "src/llamafactory/cli.py",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "FORCE_TORCHRUN": "1",
+            },
+            "args": [
+                "train",
+                "configs/qwen25vl_full_sft.yaml"
+            ]
+        },
+        {
+            "name": "Debug Finetune YT1B torchrun",
+            "type": "debugpy",
+            "program": "/home/andy/anaconda3/envs/llama_fac/bin/torchrun",
+            "request": "launch",
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+            },
+            "args": [
+                "--nnodes", "1",
+                "--node_rank", "0",
+                "--nproc_per_node", "1",
+                "--master_addr", "127.0.0.1",
+                "--master_port", "29500",
+                "src/llamafactory/launcher.py",
+                "configs/qwen25vl_full_sft.yaml"
+            ]
+        }
+    ]
+}

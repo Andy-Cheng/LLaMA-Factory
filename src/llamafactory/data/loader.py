@@ -191,6 +191,7 @@ def _get_dataset_processor(
     r"""Return the corresponding dataset processor."""
     if stage == "pt":
         dataset_processor_class = PretrainDatasetProcessor
+
     elif stage == "sft" and not do_generate:
         if data_args.packing:
             if data_args.neat_packing:  # hack datasets to have int32 attention mask

@@ -89,7 +89,8 @@ def apply_liger_kernel(
     elif model_type == "qwen2_vl":
         from liger_kernel.transformers import apply_liger_kernel_to_qwen2_vl as apply_liger_kernel
     elif model_type == "qwen2_5_vl":
-        apply_liger_kernel = apply_liger_kernel_to_qwen2_5_vl
+        from liger_kernel.transformers import apply_liger_kernel_to_qwen2_5_vl as apply_liger_kernel
+        # apply_liger_kernel = apply_liger_kernel_to_qwen2_5_vl
     else:
         logger.warning_rank0("Current model does not support liger kernel.")
         return

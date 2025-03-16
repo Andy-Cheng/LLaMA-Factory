@@ -93,7 +93,7 @@ def load_tokenizer(model_args: "ModelArguments") -> "TokenizerModule":
 
     patch_tokenizer(tokenizer, model_args)
     try:
-        processor = AutoProcessor.from_pretrained(model_args.model_name_or_path, **init_kwargs)
+        processor = AutoProcessor.from_pretrained(model_args.model_name_or_path, use_fast=model_args.use_fast_img_processor, **init_kwargs)
         patch_processor(processor, tokenizer, model_args)
     except Exception as e:
         logger.debug(f"Processor was not found: {e}.")

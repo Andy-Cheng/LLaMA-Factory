@@ -39,7 +39,10 @@ class DatasetConverter:
     def _find_medias(self, medias: Union[Any, list[Any]]) -> Optional[list[Any]]:
         r"""Optionally concatenate media path to media dir when loading from local disk."""
         if not isinstance(medias, list):
-            medias = [medias] if medias is not None else []
+            if os.path.isdir(os.path.join(self.data_args.media_dir, medias)):
+                medias = [os.path.join( medias, f) for f in sorted(os.listdir(os.path.join(os.path.join(self.data_args.media_dir, medias) )), key=lambda x: int(x.split('.')[0]))]
+            else:
+                medias = [medias] if medias is not None else []
         elif len(medias) == 0:
             return None
         else:
@@ -136,16 +139,24 @@ class SharegptDatasetConverter(DatasetConverter):
 
         aligned_messages = []
         broken_data = False
+        frame_count = None
+        if getattr(self.dataset_attr, "images", None) == 'video':
+            frame_count = len(os.listdir(os.path.join(self.data_args.media_dir,         
+                                                    example[self.dataset_attr.images])))
+                
+
         for turn_idx, message in enumerate(messages):
             if message[self.dataset_attr.role_tag] not in accept_tags[turn_idx % 2]:
                 logger.warning_rank0(f"Invalid role tag in {messages}.")
                 broken_data = True
                 break
-
+            content = message[self.dataset_attr.content_tag]
+            if tag_mapping[message[self.dataset_attr.role_tag]] == Role.USER.value and frame_count:
+                content = content.replace('<video>', ''.join(["<image>"] * frame_count))
             aligned_messages.append(
                 {
                     "role": tag_mapping[message[self.dataset_attr.role_tag]],
-                    "content": message[self.dataset_attr.content_tag],
+                    "content": content,
                 }
             )
 
