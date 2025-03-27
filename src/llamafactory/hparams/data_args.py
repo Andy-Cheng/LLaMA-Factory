@@ -122,6 +122,11 @@ class DataArguments:
         },
     )
 
+    add_timestamp: bool = field(
+        default=False,
+        metadata={"help": "Whether or not to add timestamp to the image."},
+    )
+
     def __post_init__(self):
         def split_arg(arg):
             if isinstance(arg, str):

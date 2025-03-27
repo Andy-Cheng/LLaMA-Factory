@@ -1,5 +1,5 @@
 ### model
-model_name_or_path: Qwen/Qwen2.5-VL-3B-Instruct
+model_name_or_path: Qwen/Qwen2.5-VL-7B-Instruct
 image_max_pixels: 57600
 image_min_pixels: 57600
 video_max_pixels: 57600
@@ -15,19 +15,16 @@ use_fast_img_processor: true
 stage: sft
 do_train: true
 finetuning_type: full
-freeze_vision_tower: true  # choices: [true, false]
+freeze_vision_tower: false  # choices: [true, false]
 freeze_multi_modal_projector: false  # choices: [true, false]
-freeze_language_model: true  # choices: [true, false]
-deepspeed: examples/deepspeed/ds_z3_config.json  # choices: [ds_z0_config.json, ds_z2_config.json, ds_z3_config.json]
+freeze_language_model: false  # choices: [true, false]
+deepspeed: examples/deepspeed/ds_z2_config.json  # choices: [ds_z0_config.json, ds_z2_config.json, ds_z3_config.json]
 
 
 ### dataset
-dataset: event_inserted_captions_time_unit_second_600k_one_dec_debug_images
-# dataset: mllm_demo
-# dataset: mllm_demo
+dataset: event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_20.0_percent_images
 template: qwen2_vl
 cutoff_len: 16384
-max_samples: 1000
 overwrite_cache: false # load_from_cache_file from HF datasets: false
 preprocessing_num_workers: 16
 dataloader_num_workers: 4
@@ -36,17 +33,17 @@ dataset_dir: data
 media_dir: data
 add_timestamp: true
 
-### output
-output_dir: output/qwen25_vl-3b-try-yt1b
+### output, 64 is the global batch size
+output_dir: output/${dataset}_${freeze_vision_tower}_${freeze_language_model}_64_${model_name_or_path##*/}
 logging_steps: 1
-save_steps: 1000
+save_steps: 200
 plot_loss: true
 overwrite_output_dir: true
 save_only_model: false
 
 ### train
-per_device_train_batch_size: 1
-gradient_accumulation_steps: 2
+per_device_train_batch_size: 2
+gradient_accumulation_steps: 4
 learning_rate: 1.0e-5
 num_train_epochs: 1.0
 lr_scheduler_type: cosine
