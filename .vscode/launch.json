@@ -32,7 +32,7 @@
         {
             "name": "Debug Finetune YT1B torchrun",
             "type": "debugpy",
-            "program": "/home/andy/anaconda3/envs/llama_fac/bin/torchrun",
+            "program": "/home/andy/miniconda3/envs/llama_factory/bin/torchrun",
             "request": "launch",
             "console": "integratedTerminal",
             "justMyCode": false,
@@ -45,7 +45,7 @@
                 "--master_addr", "127.0.0.1",
                 "--master_port", "29500",
                 "src/llamafactory/launcher.py",
-                "configs/qwen25vl_full_sft.yaml"
+                "configs/dense_event_caption_3B_1H100.yaml"
             ]
         }
     ]

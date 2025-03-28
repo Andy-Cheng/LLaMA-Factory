@@ -27,6 +27,8 @@ import numpy as np
 import torch
 from transformers.image_utils import get_image_size, to_numpy_array
 from typing_extensions import override
+from PIL import Image, ImageDraw, ImageFont
+import os
 
 from ..extras.constants import AUDIO_PLACEHOLDER, IGNORE_INDEX, IMAGE_PLACEHOLDER, VIDEO_PLACEHOLDER
 from ..extras.packages import (
@@ -199,11 +201,13 @@ class MMPluginMixin:
         sample_frames = min(total_frames, video_maxlen, sample_frames)
         return np.linspace(0, total_frames - 1, sample_frames).astype(np.int32)
 
-    def _regularize_images(self, images: list["ImageInput"], **kwargs) -> list["ImageObject"]:
+    def _regularize_images(self, images: list["ImageInput"], add_timestamp: bool=False, **kwargs) -> list["ImageObject"]:
         r"""Regularize images to avoid error. Including reading and pre-processing."""
         results = []
         for image in images:
+            frame_idx = "0"
             if isinstance(image, str):
+                frame_idx = os.path.basename(image).split(".")[0]
                 image = Image.open(image)
             elif isinstance(image, bytes):
                 image = Image.open(BytesIO(image))
@@ -216,7 +220,7 @@ class MMPluginMixin:
             if not isinstance(image, ImageObject):
                 raise ValueError(f"Expect input is a list of images, but got {type(image)}.")
 
-            results.append(self._preprocess_image(image, **kwargs))
+            results.append(self._preprocess_image(image, add_timestamp, frame_idx=frame_idx, **kwargs))
 
         return results
 
@@ -259,6 +263,7 @@ class MMPluginMixin:
         audios: list["AudioInput"],
         processor: "MMProcessor",
         imglens: Optional[list[int]] = None,
+        add_timestamp: bool = False,
     ) -> dict[str, "torch.Tensor"]:
         r"""Process visual inputs.
 
@@ -286,6 +291,7 @@ class MMPluginMixin:
                 images,
                 image_max_pixels=getattr(processor, "image_max_pixels", 768 * 768),
                 image_min_pixels=getattr(processor, "image_min_pixels", 32 * 32),
+                add_timestamp=add_timestamp,
             )
             if imglens is not None:
                 images = _make_batched_images(images, imglens)
@@ -377,6 +383,7 @@ class BasePlugin(MMPluginMixin):
         audlens: list[int],
         batch_ids: list[list[int]],
         processor: Optional["MMProcessor"],
+        add_timestamp: bool = False,
     ) -> dict[str, Union[list[int], "torch.Tensor"]]:
         r"""Build batched multimodal inputs for VLMs.
 
@@ -392,7 +399,7 @@ class BasePlugin(MMPluginMixin):
 
         """
         self._validate_input(processor, images, videos, audios)
-        return self._get_mm_inputs(images, videos, audios, processor)
+        return self._get_mm_inputs(images, videos, audios, processor, add_timestamp)
 
 
 @dataclass
@@ -1092,8 +1099,10 @@ class Qwen2AudioPlugin(BasePlugin):
 
 @dataclass
 class Qwen2VLPlugin(BasePlugin):
+    timestamp_font: ImageFont.ImageFont = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", 20)
+
     @override
-    def _preprocess_image(self, image: "ImageObject", **kwargs) -> "ImageObject":
+    def _preprocess_image(self, image: "ImageObject", add_timestamp: bool = False, **kwargs) -> "ImageObject":
         image = super()._preprocess_image(image, **kwargs)
         if min(image.width, image.height) < 28:
             width, height = max(image.width, 28), max(image.height, 28)
@@ -1106,6 +1115,20 @@ class Qwen2VLPlugin(BasePlugin):
         if image.height / image.width > 200:
             width, height = image.width, image.width * 180
             image = image.resize((width, height))
+
+        # TEMPURA specific
+        if add_timestamp:
+            fps = kwargs.get("video_fps", 1.0) # hardcoded for now, fixing video_fps to 1.0
+            timestamp = f"{float(kwargs.get("frame_idx", 0)) / fps:.1f}"
+            draw = ImageDraw.Draw(image)
+            text_bbox = draw.textbbox((0, 0), timestamp, font=self.timestamp_font)
+            text_width = text_bbox[2] - text_bbox[0]
+            text_height = text_bbox[3] - text_bbox[1]
+            text_x = 0
+            text_y = 0
+            draw.rectangle([text_x-5, text_y-5, text_x+text_width+5, text_y+text_height+5], 
+                        fill=(0, 0, 0, 128))
+            draw.text((text_x, text_y), timestamp, fill='white', font=self.timestamp_font)
 
         return image
 
@@ -1143,6 +1166,7 @@ class Qwen2VLPlugin(BasePlugin):
         videos: list["VideoInput"],
         audios: list["AudioInput"],
         processor: "MMProcessor",
+        add_timestamp: bool,
     ) -> dict[str, "torch.Tensor"]:
         image_processor: BaseImageProcessor = getattr(processor, "image_processor", None)
         mm_inputs = {}
@@ -1151,6 +1175,7 @@ class Qwen2VLPlugin(BasePlugin):
                 images,
                 image_max_pixels=getattr(processor, "image_max_pixels", 768 * 768),
                 image_min_pixels=getattr(processor, "image_min_pixels", 32 * 32),
+                add_timestamp=add_timestamp,
             )
             mm_inputs.update(image_processor(images, return_tensors="pt"))
 
@@ -1175,6 +1200,7 @@ class Qwen2VLPlugin(BasePlugin):
         videos: list["VideoInput"],
         audios: list["AudioInput"],
         processor: Optional["MMProcessor"],
+        add_timestamp: bool,
     ) -> list[dict[str, str]]:
         self._validate_input(processor, images, videos, audios)
         num_image_tokens, num_video_tokens = 0, 0
@@ -1183,7 +1209,7 @@ class Qwen2VLPlugin(BasePlugin):
 
         merge_length: int = getattr(image_processor, "merge_size") ** 2
         if self.expand_mm_tokens:
-            mm_inputs = self._get_mm_inputs(images, videos, audios, processor)
+            mm_inputs = self._get_mm_inputs(images, videos, audios, processor, add_timestamp)
             image_grid_thw = mm_inputs.get("image_grid_thw", [])
             video_grid_thw = mm_inputs.get("video_grid_thw", [])
         else:
@@ -1233,9 +1259,10 @@ class Qwen2VLPlugin(BasePlugin):
         audlens: list[int],
         batch_ids: list[list[int]],
         processor: Optional["MMProcessor"],
+        add_timestamp: bool = False
     ) -> dict[str, Union[list[int], "torch.Tensor"]]:
         self._validate_input(processor, images, videos, audios)
-        mm_inputs = self._get_mm_inputs(images, videos, audios, processor)
+        mm_inputs = self._get_mm_inputs(images, videos, audios, processor, add_timestamp)
         fps_per_video = mm_inputs.pop("fps_per_video", [])
         image_processor: BaseImageProcessor = getattr(processor, "image_processor")
         temporal_patch_size: int = getattr(image_processor, "temporal_patch_size", 2)

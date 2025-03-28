@@ -101,6 +101,7 @@ class MultiModalDataCollatorForSeq2Seq(DataCollatorForSeq2Seq):
 
     template: Optional["Template"] = None
     processor: Optional["ProcessorMixin"] = None
+    add_timestamp: bool = False
 
     def __post_init__(self):
         if self.template is None:
@@ -175,6 +176,7 @@ class MultiModalDataCollatorForSeq2Seq(DataCollatorForSeq2Seq):
             batch_audlens,
             batch_input_ids,
             self.processor,
+            self.add_timestamp,
         )
         if "token_type_ids" in mm_inputs:
             token_type_ids = mm_inputs.pop("token_type_ids")
