@@ -39,8 +39,9 @@ class SupervisedDatasetProcessor(DatasetProcessor):
         images: list["ImageInput"],
         videos: list["VideoInput"],
         audios: list["AudioInput"],
+        masked_start_end_frame_idxs: list[list[int]] = [],
     ) -> tuple[list[int], list[int]]:
-        messages = self.template.mm_plugin.process_messages(prompt + response, images, videos, audios, self.processor, add_timestamp=self.data_args.add_timestamp)
+        messages = self.template.mm_plugin.process_messages(prompt + response, images, videos, audios, self.processor, add_timestamp=self.data_args.add_timestamp, masked_start_end_frame_idxs=masked_start_end_frame_idxs)
         input_ids, labels = self.template.mm_plugin.process_token_ids(
             [], [], images, videos, audios, self.tokenizer, self.processor
         )
@@ -104,6 +105,7 @@ class SupervisedDatasetProcessor(DatasetProcessor):
                 images=examples["_images"][i] or [],
                 videos=examples["_videos"][i] or [],
                 audios=examples["_audios"][i] or [],
+                masked_start_end_frame_idxs=examples["masked_start_end_frame_idxs"][i] if 'masked_start_end_frame_idxs' in examples else [],
             )
             model_inputs["input_ids"].append(input_ids)
             model_inputs["attention_mask"].append([1] * len(input_ids))
@@ -111,6 +113,8 @@ class SupervisedDatasetProcessor(DatasetProcessor):
             model_inputs["images"].append(examples["_images"][i])
             model_inputs["videos"].append(examples["_videos"][i])
             model_inputs["audios"].append(examples["_audios"][i])
+            if 'masked_start_end_frame_idxs' in examples:
+                model_inputs["masked_start_end_frame_idxs"].append(examples["masked_start_end_frame_idxs"][i])
 
         return model_inputs
 

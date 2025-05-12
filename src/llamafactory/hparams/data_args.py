@@ -121,6 +121,10 @@ class DataArguments:
             )
         },
     )
+    data_video_fps: float = field(
+        default=1.0,
+        metadata={"help": "The frames to sample per second for video inputs."},
+    )
 
     add_timestamp: bool = field(
         default=False,

@@ -1,0 +1,39 @@
+### model
+model_name_or_path: OpenGVLab/InternVL3-2B-hf
+trust_remote_code: true
+
+### method
+stage: sft
+do_train: true
+finetuning_type: full
+freeze_vision_tower: true  # choices: [true, false]
+freeze_multi_modal_projector: false  # choices: [true, false]
+freeze_language_model: true  # choices: [true, false]
+deepspeed: examples/deepspeed/ds_z2_config.json  # choices: [ds_z0_config.json, ds_z2_config.json, ds_z3_config.json]
+
+### dataset
+dataset: mllm_video_demo
+template: intern_vl
+cutoff_len: 2048
+max_samples: 1000
+overwrite_cache: true
+preprocessing_num_workers: 4
+
+### output
+output_dir: output/internvl3-8b-s/lora/sft-mixup-video
+logging_steps: 1
+save_steps: 500
+plot_loss: true
+overwrite_output_dir: true
+
+### train
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 4
+learning_rate: 1.0e-4
+num_train_epochs: 5.0
+lr_scheduler_type: cosine
+warmup_ratio: 0.1
+bf16: true
+ddp_timeout: 180000000
+flash_attn: auto
+video_maxlen: 4

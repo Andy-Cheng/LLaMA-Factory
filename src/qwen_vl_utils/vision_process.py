@@ -96,7 +96,7 @@ def to_rgb(pil_image: Image.Image) -> Image.Image:
           return pil_image.convert("RGB")
 
 # check if the mask should be masked
-def check_masked_frame(idx: int, start_end_frame_idxs: list[tuple[int, int]]) -> bool:
+def check_masked_frame(idx: int, start_end_frame_idxs: list[list[int]]) -> bool:
     for start, end in start_end_frame_idxs:
         if idx >= start and idx <= end:
             return True
@@ -108,7 +108,7 @@ def mask_strategy(version, masked_image):
     else:
         raise ValueError(f"Unsupported mask strategy: {version}")
 
-def fetch_image(ele: dict[str, str | Image.Image], size_factor: int = IMAGE_FACTOR, masked_start_end_frame_idxs: list[tuple[int, int]] = [], masked_strategy_version: str = "ver0", masked_image: Image.Image | None = None, add_timestamp: bool = False, font=None) -> Image.Image:
+def fetch_image(ele: dict[str, str | Image.Image], size_factor: int = IMAGE_FACTOR, masked_start_end_frame_idxs: list[list[int]] = [], masked_strategy_version: str = "ver0", masked_image: Image.Image | None = None, add_timestamp: bool = False, font=None) -> Image.Image:
     if "image" in ele:
         image = ele["image"]
     else:

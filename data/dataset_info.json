@@ -681,8 +681,8 @@
     "folder": "python"
   },
 
-  "event_inserted_captions_time_unit_second_600k_one_dec_debug_images": {
-    "file_name": "yt1b/jsons/event_inserted_captions_time_unit_second_600k_one_dec_debug.json",
+  "event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_0.01_percent_images_debug": {
+    "file_name": "yt1b/jsons/event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_0.01_percent_debug.json",
     "formatting": "sharegpt",
     "columns": {
       "messages": "conversations",
@@ -698,6 +698,36 @@
 
   "event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_20.0_percent_images": {
     "file_name": "yt1b/jsons/event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_20.0_percent.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "images": "video"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt"
+    }
+  },
+  
+  "masked_event_prediction_prompt_ver0_datascale_1_prompt-model_gpt4o_100k_no_dvc_sft_data_top_wc_top_20.0_percent_images": {
+    "file_name": "yt1b/jsons/masked_event_prediction_prompt_ver0_datascale_1_prompt-model_gpt4o_100k_no_dvc_sft_data_top_wc_top_20.0_percent.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "images": "video"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt"
+    }
+  },
+
+  "masked_event_prediction_prompt_ver0_datascale_1_prompt-model_gpt4o_100k_no_dvc_sft_data_top_wc_top_20.0_percent_100samples_images": {
+    "file_name": "yt1b/jsons/masked_event_prediction_prompt_ver0_datascale_1_prompt-model_gpt4o_100k_no_dvc_sft_data_top_wc_top_20.0_percent_100samples.json",
     "formatting": "sharegpt",
     "columns": {
       "messages": "conversations",

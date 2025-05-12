@@ -174,3 +174,4 @@ wandb/
 swanlog/
 generated_predictions.jsonl
 data/yt1b
+tmp_codes/

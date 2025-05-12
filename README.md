@@ -434,10 +434,16 @@ huggingface-cli login
 ```bash
 git clone --depth 1 https://github.com/hiyouga/LLaMA-Factory.git
 cd LLaMA-Factory
-pip install -e ".[torch,metrics,deepspeed,liger-kernel]"
+pip install -e ".[torch=2.6.0,torchvision=0.21.0,metrics,deepspeed,liger-kernel]"
 pip install git+https://github.com/huggingface/transformers.git accelerate
 pip install flash-attn --no-build-isolation
 ```
+
+ISSUE: _CONFIG_FOR_DOC, GEMMA_INPUTS_DOCSTRING not found liger_kernel/transformers/model/gemma.py
+install the latest transformers to train intervl-2.5,3
+pip install git+https://github.com/huggingface/transformers.git accelerate
+pip install transformers==4.51.0 stable version to use liger kernel for qwenvl2.5
+
 
 Extra dependencies available: torch, torch-npu, metrics, deepspeed, liger-kernel, bitsandbytes, hqq, eetq, gptq, awq, aqlm, vllm, galore, apollo, badam, adam-mini, qwen, minicpm_v, modelscope, openmind, swanlab, quality
 

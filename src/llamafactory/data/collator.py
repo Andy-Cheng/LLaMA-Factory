@@ -108,20 +108,21 @@ class MultiModalDataCollatorForSeq2Seq(DataCollatorForSeq2Seq):
             raise ValueError("Template is required for MultiModalDataCollator.")
 
     def __call__(self, features: list[dict[str, Any]]) -> dict[str, "torch.Tensor"]:
-        batch_images, batch_videos, batch_audios = [], [], []
+        batch_images, batch_videos, batch_audios, batch_masked_start_end_frame_idxs = [], [], [], []
         batch_imglens, batch_vidlens, batch_audlens, batch_input_ids = [], [], [], []
         for feature in features:
             images = feature.pop("images", None) or []
             videos = feature.pop("videos", None) or []
             audios = feature.pop("audios", None) or []
+            masked_start_end_frame_idxs = feature.pop("masked_start_end_frame_idxs", None) or []
             batch_images.extend(images)
             batch_videos.extend(videos)
             batch_audios.extend(audios)
+            batch_masked_start_end_frame_idxs.append(masked_start_end_frame_idxs)
             batch_imglens.append(len(images))
             batch_vidlens.append(len(videos))
             batch_audlens.append(len(audios))
             batch_input_ids.append(feature["input_ids"])
-
         fake_input_ids = []
         if (
             self.template.mm_plugin.image_token is not None and sum(batch_imglens) == 0 and sum(batch_vidlens) == 0
@@ -177,6 +178,7 @@ class MultiModalDataCollatorForSeq2Seq(DataCollatorForSeq2Seq):
             batch_input_ids,
             self.processor,
             self.add_timestamp,
+            batch_masked_start_end_frame_idxs,
         )
         if "token_type_ids" in mm_inputs:
             token_type_ids = mm_inputs.pop("token_type_ids")

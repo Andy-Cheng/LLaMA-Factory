@@ -1,5 +1,5 @@
 ### model
-model_name_or_path: Qwen/Qwen2.5-VL-7B-Instruct
+model_name_or_path: Qwen/Qwen2.5-VL-3B-Instruct
 image_max_pixels: 57600
 image_min_pixels: 57600
 video_max_pixels: 57600
@@ -15,17 +15,17 @@ use_fast_img_processor: true
 stage: sft
 do_train: true
 finetuning_type: full
-freeze_vision_tower: false  # choices: [true, false]
+freeze_vision_tower: true  # choices: [true, false]
 freeze_multi_modal_projector: false  # choices: [true, false]
-freeze_language_model: false  # choices: [true, false]
+freeze_language_model: true  # choices: [true, false]
 deepspeed: examples/deepspeed/ds_z2_config.json  # choices: [ds_z0_config.json, ds_z2_config.json, ds_z3_config.json]
 
 
 ### dataset
-dataset: event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_20.0_percent_images
+dataset: masked_event_prediction_prompt_ver0_datascale_1_prompt-model_gpt4o_100k_no_dvc_sft_data_top_wc_top_20.0_percent_100samples_images
 template: qwen2_vl
 cutoff_len: 32768
-overwrite_cache: false # load_from_cache_file from HF datasets: false
+overwrite_cache: true # load_from_cache_file from HF datasetstruese
 preprocessing_num_workers: 16
 dataloader_num_workers: 4
 dataloader_prefetch_factor: 4 # try to use it, supported by HF trainer
@@ -33,13 +33,13 @@ dataset_dir: data
 media_dir: data
 add_timestamp: true
 
-### output, 64 is the global batch size
-output_dir: output/event_vlm_dvc_event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_20.0_percent_images_7B
+### output
+output_dir: output/masked_event_prediction_3B_8H100
 logging_steps: 1
 save_steps: 200
 plot_loss: true
 overwrite_output_dir: true
-save_only_model: false
+save_only_model: true
 
 ### train
 per_device_train_batch_size: 2
@@ -55,7 +55,7 @@ resume_from_checkpoint: null
 
 
 report_to: wandb
-run_name: event_vlm_dvc_event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_20.0_percent_images_7B
+run_name: masked_event_prediction_3b_debug
 
 ### eval
 # val_size: 0.1

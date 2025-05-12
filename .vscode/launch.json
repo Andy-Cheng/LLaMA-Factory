@@ -35,6 +35,28 @@
             "program": "/home/andy/miniconda3/envs/llama_factory/bin/torchrun",
             "request": "launch",
             "console": "integratedTerminal",
+            // "justMyCode": false,
+            "env": {
+            },
+            "args": [
+                "--nnodes", "1",
+                "--node_rank", "0",
+                "--nproc_per_node", "1",
+                "--master_addr", "127.0.0.1",
+                "--master_port", "29500",
+                "src/llamafactory/launcher.py",
+                // "configs/dense_event_caption_3B_1H100.yaml"
+                // "configs/dense_event_caption_2B_1H100_internvl3.yaml"
+                "configs/2B_1H100_internvl3_demodata.yaml"
+                // "configs/masked_event_prediction_3B_8H100.yaml"
+            ]
+        },
+        {
+            "name": "Debug Finetune YT1B torchrun 8H100",
+            "type": "debugpy",
+            "program": "/home/andy/miniconda3/bin/torchrun",
+            "request": "launch",
+            "console": "integratedTerminal",
             "justMyCode": false,
             "env": {
             },
@@ -45,7 +67,7 @@
                 "--master_addr", "127.0.0.1",
                 "--master_port", "29500",
                 "src/llamafactory/launcher.py",
-                "configs/dense_event_caption_3B_1H100.yaml"
+                "configs/dense_event_caption_7B_8H100_s1_s2.yaml"
             ]
         }
     ]

@@ -41,6 +41,13 @@ class DatasetConverter:
         if not isinstance(medias, list):
             if os.path.isdir(os.path.join(self.data_args.media_dir, medias)):
                 medias = [os.path.join( medias, f) for f in sorted(os.listdir(os.path.join(os.path.join(self.data_args.media_dir, medias) )), key=lambda x: int(x.split('.')[0]))]
+                sampled_images = []
+                skip_interval = int(1/self.data_args.data_video_fps)
+                for image in medias:
+                    frame_idx = int(os.path.basename(image).split(".")[0])
+                    if frame_idx % skip_interval == 0:
+                        sampled_images.append(image)
+                medias = sampled_images
             else:
                 medias = [medias] if medias is not None else []
         elif len(medias) == 0:
@@ -139,20 +146,20 @@ class SharegptDatasetConverter(DatasetConverter):
 
         aligned_messages = []
         broken_data = False
-        frame_count = None
-        if getattr(self.dataset_attr, "images", None) == 'video':
-            frame_count = len(os.listdir(os.path.join(self.data_args.media_dir,         
-                                                    example[self.dataset_attr.images])))
+        # frame_count = None
+        # if getattr(self.dataset_attr, "images", None) == 'video':
+            # frame_count = len(os.listdir(os.path.join(self.data_args.media_dir,         
+            #                                         example[self.dataset_attr.images])))
                 
-
+        _images = self._find_medias(example[self.dataset_attr.images]) if self.dataset_attr.images else None
         for turn_idx, message in enumerate(messages):
             if message[self.dataset_attr.role_tag] not in accept_tags[turn_idx % 2]:
                 logger.warning_rank0(f"Invalid role tag in {messages}.")
                 broken_data = True
                 break
             content = message[self.dataset_attr.content_tag]
-            if tag_mapping[message[self.dataset_attr.role_tag]] == Role.USER.value and frame_count:
-                content = content.replace('<video>', ''.join(["<image>"] * frame_count))
+            if tag_mapping[message[self.dataset_attr.role_tag]] == Role.USER.value and getattr(self.dataset_attr, "images", None) == 'video' and _images:
+                content = content.replace('<video>', ''.join(["<image>"] * len(_images)))
             aligned_messages.append(
                 {
                     "role": tag_mapping[message[self.dataset_attr.role_tag]],
@@ -210,9 +217,10 @@ class SharegptDatasetConverter(DatasetConverter):
             "_response": response,
             "_system": system,
             "_tools": example[self.dataset_attr.tools] if self.dataset_attr.tools else "",
-            "_images": self._find_medias(example[self.dataset_attr.images]) if self.dataset_attr.images else None,
+            "_images": _images,
             "_videos": self._find_medias(example[self.dataset_attr.videos]) if self.dataset_attr.videos else None,
             "_audios": self._find_medias(example[self.dataset_attr.audios]) if self.dataset_attr.audios else None,
+            "masked_start_end_frame_idxs": example['masked_start_end_frame_idxs'] if 'masked_start_end_frame_idxs' in example else [],
         }
         return output
 
