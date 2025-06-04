@@ -1,5 +1,5 @@
 ### model
-model_name_or_path: OpenGVLab/InternVL3-1B-hf
+model_name_or_path: OpenGVLab/InternVL3-2B-hf
 image_max_pixels: 14400
 image_min_pixels: 14400
 video_max_pixels: 14400
@@ -22,19 +22,19 @@ deepspeed: examples/deepspeed/ds_z2_config.json  # choices: [ds_z0_config.json, 
 
 
 ### dataset
-dataset: event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_0.01_percent_images_debug
+dataset: event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_20.0_percent_images
 template: intern_vl
 cutoff_len: 32768
 overwrite_cache: true # load_from_cache_file from HF datasets: false
-preprocessing_num_workers: 4 # 16
+preprocessing_num_workers: 16 # 16
 dataloader_num_workers: 4
 dataloader_prefetch_factor: 4 # try to use it, supported by HF trainer
 dataset_dir: data
 media_dir: data
 add_timestamp: true
-data_video_fps: 1.0
+data_video_fps: 0.5 # set 0.5 fps for now to avoid max output length
 ### output
-output_dir: output/dense_event_caption_2B_1H100_internvl3
+output_dir: output/dense_event_caption_2B_8H100_internvl3
 logging_steps: 1
 save_steps: 200
 plot_loss: true

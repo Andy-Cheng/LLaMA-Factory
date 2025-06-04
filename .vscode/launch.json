@@ -46,8 +46,8 @@
                 "--master_port", "29500",
                 "src/llamafactory/launcher.py",
                 // "configs/dense_event_caption_3B_1H100.yaml"
-                // "configs/dense_event_caption_2B_1H100_internvl3.yaml"
-                "configs/2B_1H100_internvl3_demodata.yaml"
+                "configs/dense_event_caption_2B_1H100_internvl3.yaml"
+                // "configs/2B_1H100_internvl3_demodata.yaml"
                 // "configs/masked_event_prediction_3B_8H100.yaml"
             ]
         },

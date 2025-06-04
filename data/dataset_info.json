@@ -696,6 +696,23 @@
     }
   },
 
+
+  "event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_1.0_percent_images": {
+    "file_name": "yt1b/jsons/event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_1.0_percent.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "images": "video"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt"
+    }
+  },
+
+
   "event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_20.0_percent_images": {
     "file_name": "yt1b/jsons/event_inserted_captions_time_unit_second_600k_one_dec_seconds_cleaned_top_wc_top_20.0_percent.json",
     "formatting": "sharegpt",
@@ -732,6 +749,62 @@
     "columns": {
       "messages": "conversations",
       "images": "video"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt"
+    }
+  },
+  "charades": {
+    "file_name": "charades/instruct_tvg_charades_sft.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "images": "video"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt"
+    }
+  },
+  "charades_video": {
+    "file_name": "charades/instruct_tvg_charades_sft_video.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "videos": "video"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt"
+    }
+  },
+  "qvhighlights": {
+    "file_name": "qvhighlights/instruct_vhd_qvhighlights_sft.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "images": "video"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "human",
+      "assistant_tag": "gpt"
+    }
+  },
+  "qvhighlights_video": {
+    "file_name": "qvhighlights/instruct_vhd_qvhighlights_sft_video.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "videos": "video"
     },
     "tags": {
       "role_tag": "from",

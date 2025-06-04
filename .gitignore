@@ -174,4 +174,6 @@ wandb/
 swanlog/
 generated_predictions.jsonl
 data/yt1b
+data/qvhighlights
+data/charades
 tmp_codes/
